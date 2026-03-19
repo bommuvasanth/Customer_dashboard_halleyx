@@ -59,47 +59,26 @@ const LoginPage = () => {
   // Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('🔐 Login attempt started');
-    
-    if (!validate()) {
-      console.log('❌ Validation failed');
-      return;
-    }
+    if (!validate()) return;
 
     setIsLoading(true);
     setShowAlert(false);
 
     try {
       const normalizedEmail = email.toLowerCase().trim();
-      console.log('📧 Email:', normalizedEmail);
       
-      // Mock authentication for demo (works without backend)
-      const validUsers = {
-        'admin1804@gmail.com': { password: 'admin254', role: 'admin', name: 'Admin User' },
-        'customer@halleyx.com': { password: 'customer123', role: 'customer', name: 'Customer User' }
-      };
-
-      const user = validUsers[normalizedEmail];
-      console.log('👤 User found:', !!user);
-      
-      if (!user || user.password !== password) {
-        console.log('❌ Invalid credentials');
-        throw new Error('Invalid credentials');
-      }
-
-      // Mock token and user data
-      const mockToken = 'mock_jwt_token_' + Date.now();
-      const userData = {
+      const response = await login({
         email: normalizedEmail,
-        role: user.role,
-        name: user.name
-      };
+        password
+      });
+
+      const { access_token, user: userData } = response.data;
 
       // Store Auth Data
-      localStorage.setItem('auth_token', mockToken);
+      localStorage.setItem('auth_token', access_token);
       localStorage.setItem('user', JSON.stringify(userData));
 
-      console.log('✅ Login successful, navigating to Dashboard Hub...');
+      console.log('✅ Login successful, navigating to Dashboard...');
       navigate('/dashboard');
 
     } catch (err) {

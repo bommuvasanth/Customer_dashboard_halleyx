@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { mockOrders, mockDashboardConfig, generateMockId } from '../data/mockOrders';
 
-// Use environment variable for API URL, fallback to localhost
+// Use environment variable for API URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+console.log('🔗 API URL:', API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 5000 // 5 second timeout
+  timeout: 10000 // 10 second timeout
 });
 
 // Add a request interceptor
@@ -21,7 +23,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Mock data storage in localStorage
+// Mock data storage in localStorage (fallback only)
 const STORAGE_KEY = 'halleyx_mock_orders';
 const CONFIG_KEY = 'halleyx_dashboard_config';
 
@@ -34,30 +36,29 @@ const saveMockOrders = (orders) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
 };
 
-// API functions with mock fallback
+// API functions with mock fallback (only if backend fails)
 export const login = async (credentials) => {
-  try {
-    return await api.post('/auth/login', credentials);
-  } catch (error) {
-    console.warn('Backend unavailable, using mock authentication');
-    throw error; // Let LoginPage handle mock auth
-  }
+  return await api.post('/auth/login', credentials);
 };
 
 export const getOrders = async (dateFilter = 'All time') => {
   try {
-    return await api.get(`/orders?dateFilter=${dateFilter}`);
+    const response = await api.get(`/orders?dateFilter=${dateFilter}`);
+    console.log('✅ Orders fetched from backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, using mock orders');
+    console.warn('⚠️ Backend unavailable, using mock orders');
     return { data: getMockOrders() };
   }
 };
 
 export const createOrder = async (data) => {
   try {
-    return await api.post('/orders', data);
+    const response = await api.post('/orders', data);
+    console.log('✅ Order created on backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, creating mock order');
+    console.warn('⚠️ Backend unavailable, creating mock order');
     const orders = getMockOrders();
     const newOrder = {
       ...data,
@@ -72,9 +73,11 @@ export const createOrder = async (data) => {
 
 export const updateOrder = async (id, data) => {
   try {
-    return await api.put(`/orders/${id}`, data);
+    const response = await api.put(`/orders/${id}`, data);
+    console.log('✅ Order updated on backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, updating mock order');
+    console.warn('⚠️ Backend unavailable, updating mock order');
     const orders = getMockOrders();
     const index = orders.findIndex(o => o.id === id);
     if (index !== -1) {
@@ -87,9 +90,11 @@ export const updateOrder = async (id, data) => {
 
 export const deleteOrder = async (id) => {
   try {
-    return await api.delete(`/orders/${id}`);
+    const response = await api.delete(`/orders/${id}`);
+    console.log('✅ Order deleted from backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, deleting mock order');
+    console.warn('⚠️ Backend unavailable, deleting mock order');
     const orders = getMockOrders();
     const filtered = orders.filter(o => o.id !== id);
     saveMockOrders(filtered);
@@ -99,9 +104,11 @@ export const deleteOrder = async (id) => {
 
 export const getDashboardWidgets = async (dateFilter = 'All time') => {
   try {
-    return await api.get(`/dashboard/widgets?dateFilter=${dateFilter}`);
+    const response = await api.get(`/dashboard/widgets?dateFilter=${dateFilter}`);
+    console.log('✅ Dashboard config fetched from backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, using mock dashboard config');
+    console.warn('⚠️ Backend unavailable, using mock dashboard config');
     const stored = localStorage.getItem(CONFIG_KEY);
     return { data: stored ? JSON.parse(stored) : mockDashboardConfig };
   }
@@ -109,9 +116,11 @@ export const getDashboardWidgets = async (dateFilter = 'All time') => {
 
 export const saveDashboardConfig = async (data) => {
   try {
-    return await api.post("/dashboard/save", data);
+    const response = await api.post("/dashboard/save", data);
+    console.log('✅ Dashboard config saved to backend');
+    return response;
   } catch (error) {
-    console.warn('Backend unavailable, saving mock dashboard config');
+    console.warn('⚠️ Backend unavailable, saving mock dashboard config');
     localStorage.setItem(CONFIG_KEY, JSON.stringify(data));
     return { data: { status: 'success' } };
   }
