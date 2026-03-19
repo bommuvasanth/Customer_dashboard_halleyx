@@ -1,8 +1,9 @@
 import motor.motor_asyncio
 import os
 
-MONGODB_URL = "mongodb://localhost:27017"
-DATABASE_NAME = "dashbuilder"
+# Use environment variable for MongoDB URL, fallback to localhost
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "dashbuilder")
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_URL)
 db = client[DATABASE_NAME]

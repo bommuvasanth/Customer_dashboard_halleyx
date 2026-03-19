@@ -25,9 +25,15 @@ def verify_password(plain_password, hashed_password):
 
 app = FastAPI()
 
+# CORS configuration - allow frontend domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://customer-dashboard-halleyx.vercel.app",
+        "https://*.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
