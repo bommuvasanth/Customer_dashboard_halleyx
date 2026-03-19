@@ -59,13 +59,19 @@ const LoginPage = () => {
   // Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    console.log('🔐 Login attempt started');
+    
+    if (!validate()) {
+      console.log('❌ Validation failed');
+      return;
+    }
 
     setIsLoading(true);
     setShowAlert(false);
 
     try {
       const normalizedEmail = email.toLowerCase().trim();
+      console.log('📧 Email:', normalizedEmail);
       
       // Mock authentication for demo (works without backend)
       const validUsers = {
@@ -74,8 +80,10 @@ const LoginPage = () => {
       };
 
       const user = validUsers[normalizedEmail];
+      console.log('👤 User found:', !!user);
       
       if (!user || user.password !== password) {
+        console.log('❌ Invalid credentials');
         throw new Error('Invalid credentials');
       }
 
@@ -91,11 +99,11 @@ const LoginPage = () => {
       localStorage.setItem('auth_token', mockToken);
       localStorage.setItem('user', JSON.stringify(userData));
 
-      console.log('Login successful, navigating to Dashboard Hub...');
+      console.log('✅ Login successful, navigating to Dashboard Hub...');
       navigate('/dashboard');
 
     } catch (err) {
-      console.error('Login Failure:', err);
+      console.error('❌ Login Failure:', err);
       setAlertMessage("Invalid email or password. Please try again.");
       setShowAlert(true);
     } finally {
