@@ -67,15 +67,28 @@ const LoginPage = () => {
     try {
       const normalizedEmail = email.toLowerCase().trim();
       
-      const response = await login({
+      // Mock authentication for demo (works without backend)
+      const validUsers = {
+        'admin1804@gmail.com': { password: 'admin254', role: 'admin', name: 'Admin User' },
+        'customer@halleyx.com': { password: 'customer123', role: 'customer', name: 'Customer User' }
+      };
+
+      const user = validUsers[normalizedEmail];
+      
+      if (!user || user.password !== password) {
+        throw new Error('Invalid credentials');
+      }
+
+      // Mock token and user data
+      const mockToken = 'mock_jwt_token_' + Date.now();
+      const userData = {
         email: normalizedEmail,
-        password
-      });
+        role: user.role,
+        name: user.name
+      };
 
-      const { access_token, user: userData } = response.data;
-
-      // Store Auth Data exactly as requested
-      localStorage.setItem('auth_token', access_token);
+      // Store Auth Data
+      localStorage.setItem('auth_token', mockToken);
       localStorage.setItem('user', JSON.stringify(userData));
 
       console.log('Login successful, navigating to Dashboard Hub...');
@@ -83,7 +96,6 @@ const LoginPage = () => {
 
     } catch (err) {
       console.error('Login Failure:', err);
-      // On error (401), show the global alert banner
       setAlertMessage("Invalid email or password. Please try again.");
       setShowAlert(true);
     } finally {

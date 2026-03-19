@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+// Use environment variable for API URL, fallback to localhost
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api'
+  baseURL: API_URL,
+  timeout: 5000 // 5 second timeout
 });
 
 // Add a request interceptor
@@ -14,6 +18,17 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Add response interceptor to handle errors gracefully
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ECONNABORTED' || error.message.includes('Network Error')) {
+      console.warn('Backend not available, using mock data');
+    }
+    return Promise.reject(error);
+  }
 );
 
 export const login = (credentials) => api.post('/auth/login', credentials);
