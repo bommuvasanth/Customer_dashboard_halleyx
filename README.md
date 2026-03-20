@@ -62,11 +62,6 @@ npm run dev
 - **Password**: admin254
 - **Access**: Full analytics, dashboard configuration, order management
 
-### Customer User
-- **Email**: customer@halleyx.com
-- **Password**: customer123
-- **Access**: Order creation and personal order viewing
-
 ## 📊 API Endpoints
 
 ### Authentication
@@ -142,21 +137,6 @@ python main.py                    # Start server directly
 uvicorn main:app --reload        # Start with auto-reload
 ```
 
-## 🚀 Deployment
-
-### Frontend (Vercel/Netlify)
-```bash
-npm run build
-# Deploy dist/ folder
-```
-
-### Backend (Railway/Heroku)
-```bash
-# Ensure requirements.txt is up to date
-pip freeze > requirements.txt
-# Deploy with Python buildpack
-```
-
 ## 🔒 Security Features
 
 - **JWT Tokens**: 24-hour expiration with secure secret
@@ -183,9 +163,4 @@ pip freeze > requirements.txt
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Built as part of the Halleyx Full Stack Engineer Challenge
-- Uses modern web development best practices
-- Implements industry-standard security measures
+ Implements industry-standard security measures
